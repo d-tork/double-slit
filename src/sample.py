@@ -23,7 +23,7 @@ class Flag(dict):
 
 class SampleFlagGenerator(object):
     """adapted from https://www.programiz.com/python-programming/iterator"""
-    names = pd.read_csv(src.NAMES_FILE, squeeze=True)
+    names = pd.read_csv(src.NAMES_FILE)
     emp_types = ['gov', 'ctr']
     flags = {
         'bankruptcy': ['financial'],
@@ -47,18 +47,21 @@ class SampleFlagGenerator(object):
         raise StopIteration
 
     def create_flag(self):
-        chosen_flag = random.choice(list(self.flags.keys()))
+        emp_name, emp_ueid = self.get_random_employee()
+        chosen_flag_reason = random.choice(list(self.flags.keys()))
         flag = Flag(
-            name=random.choice(self.names),
+            name=emp_name,
             emp_type=random.choice(self.emp_types),
-            ueid=create_ueid(),
-            flag=chosen_flag,
-            flag_types=self.flags[chosen_flag],
+            ueid=emp_ueid,
+            flag=chosen_flag_reason,
+            flag_types=self.flags[chosen_flag_reason],
             severity=random.randint(1, 3)
         )
         return flag
 
-
-def create_ueid():
-    return uuid.uuid4().hex[:9]
+    def get_random_employee(self):
+        chosen_name = self.names.sample()
+        name = chosen_name.name.iloc[0]
+        ueid = chosen_name.ueid.iloc[0]
+        return name, ueid
 
