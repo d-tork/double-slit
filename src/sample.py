@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime
 
 import src
+from src.helper import HRFile
 
 
 class Flag(dict):
@@ -23,8 +24,6 @@ class Flag(dict):
 
 class SampleFlagGenerator(object):
     """adapted from https://www.programiz.com/python-programming/iterator"""
-    names = pd.read_csv(src.NAMES_FILE)
-    emp_types = ['gov', 'ctr']
     flags = {
         'bankruptcy': ['financial'],
         'unreported_bankruptcy': ['financial', 'integrity'],
@@ -36,6 +35,7 @@ class SampleFlagGenerator(object):
     def __init__(self, n):
         self.n = n
         self._index = 0
+        self._hr = self.read_local_hr_file_as_dict()
 
     def __iter__(self):
         return self
@@ -46,12 +46,18 @@ class SampleFlagGenerator(object):
             return self.create_flag()
         raise StopIteration
 
+    @staticmethod
+    def read_local_hr_file_as_dict():
+        df = pd.read_csv(HRFile.new_names_file, index_col='ueid')
+        return df.to_dict(orient='index')
+
     def create_flag(self):
-        emp_name, emp_ueid = self.get_random_employee()
+        emp_ueid = self.get_random_employee_ueid()
+        emp_info = self._hr[emp_ueid]
         chosen_flag_reason = random.choice(list(self.flags.keys()))
         flag = Flag(
-            name=emp_name,
-            emp_type=random.choice(self.emp_types),
+            name=emp_info['name'],
+            emp_type=emp_info['emp_type'],
             ueid=emp_ueid,
             flag=chosen_flag_reason,
             flag_types=self.flags[chosen_flag_reason],
@@ -59,9 +65,7 @@ class SampleFlagGenerator(object):
         )
         return flag
 
-    def get_random_employee(self):
-        chosen_name = self.names.sample()
-        name = chosen_name.name.iloc[0]
-        ueid = chosen_name.ueid.iloc[0]
-        return name, ueid
+    def get_random_employee_ueid(self):
+        return random.choice(list(self._hr.keys()))
+
 
