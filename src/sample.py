@@ -6,10 +6,11 @@ import uuid
 import os
 
 from src.example import Flag
+import src
 
 
 class SampleFlagGenerator(object):
-    names = pd.read_csv('names.csv', squeeze=True)
+    names = pd.read_csv(src.NAMES_FILE, squeeze=True)
     emp_types = ['gov', 'ctr', 'other']
     flags = {
         'bankruptcy': ['financial'],
@@ -21,7 +22,16 @@ class SampleFlagGenerator(object):
 
     def __init__(self, n):
         self.n = n
-        print(os.getcwd())
+        self._index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._index < self.n:
+            self._index += 1
+            return self.create_flag()
+        raise StopIteration
 
     def generate(self):
         for i in range(self.n):
@@ -44,8 +54,3 @@ class SampleFlagGenerator(object):
 def create_ueid():
     return uuid.uuid4().hex[:9]
 
-
-if __name__ == '__main__':
-    a = SampleFlagGenerator(2)
-    for i in a.generate():
-        print(i)
