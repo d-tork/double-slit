@@ -16,7 +16,7 @@ class HRFile(object):
     def __init__(self):
         self._names = self.read_original_names()
         self._new_data = self._names.copy()
-        self._positions = self.read_positions_file()
+        self._positions = self.read_positions_file_as_tuples()
         self.create_hr_data()
         self.write_hr_data_to_file()
 
@@ -24,7 +24,7 @@ class HRFile(object):
         names = pd.read_csv(self.original_names_file, index_col=None)
         return names
 
-    def read_positions_file(self):
+    def read_positions_file_as_tuples(self):
         with open(self.positions_file) as f:
             positions_dict = yaml.load(f, Loader=yaml.FullLoader)
         return self.create_ranked_tuples_from_dict(positions_dict)
@@ -36,6 +36,7 @@ class HRFile(object):
     def create_hr_data(self):
         self.add_ueid()
         self.add_emp_type()
+        self.add_position()
 
     def add_ueid(self):
         self._new_data['ueid'] = self._new_data['name'].map(self.generate_ueid)
@@ -53,6 +54,12 @@ class HRFile(object):
             weights=[0.3, 0.7],
             k=len(self._names)
         )
+
+    def add_position(self):
+        position_df = pd.DataFrame(self._positions, columns=['rank', 'position', 'team'])
+        position_df_resized = position_df.sample(n=len(self._new_data), replace=True)
+        position_df_resized.reset_index(drop=True, inplace=True)
+        self._new_data = pd.concat([self._new_data, position_df_resized], axis=1)
 
     def write_hr_data_to_file(self):
         self._new_data.to_csv(self.new_names_file, index=False)

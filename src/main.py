@@ -9,7 +9,7 @@ def main():
         {'host': 'synapse', 'port': '9200'}
     ])
 
-    for sample_flag in SampleFlagGenerator(10):
+    for sample_flag in SampleFlagGenerator(1000):
         sample_flag.push_to_es(es)
 
 

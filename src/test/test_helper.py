@@ -27,6 +27,11 @@ class HRFileCreationTestCase(unittest.TestCase):
         hr = helper.HRFile()
         self.assertIn('emp_type', hr._new_data)
 
+    def test_add_position_cols(self):
+        hr = helper.HRFile()
+        self.assertIn('position', hr._new_data)
+        self.assertIn('team', hr._new_data)
+
 
 class PositionsYAMLTestCase(unittest.TestCase):
     def setUp(self):
