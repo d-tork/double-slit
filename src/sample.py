@@ -24,7 +24,7 @@ class Flag(dict):
 class SampleFlagGenerator(object):
     """adapted from https://www.programiz.com/python-programming/iterator"""
     names = pd.read_csv(src.NAMES_FILE, squeeze=True)
-    emp_types = ['gov', 'ctr', 'other']
+    emp_types = ['gov', 'ctr']
     flags = {
         'bankruptcy': ['financial'],
         'unreported_bankruptcy': ['financial', 'integrity'],
