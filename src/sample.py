@@ -1,15 +1,28 @@
 
 import pandas as pd
 import random
-from time import sleep
 import uuid
-import os
+from datetime import datetime
 
-from src.example import Flag
 import src
 
 
+class Flag(dict):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self['flag_datetime'] = datetime.now()
+
+    def push_to_es(self, es_instance):
+        response = es_instance.index(
+            index='my-index',
+            doc_type='flag',
+            body=self
+        )
+        print(response)
+
+
 class SampleFlagGenerator(object):
+    """adapted from https://www.programiz.com/python-programming/iterator"""
     names = pd.read_csv(src.NAMES_FILE, squeeze=True)
     emp_types = ['gov', 'ctr', 'other']
     flags = {
@@ -32,11 +45,6 @@ class SampleFlagGenerator(object):
             self._index += 1
             return self.create_flag()
         raise StopIteration
-
-    def generate(self):
-        for i in range(self.n):
-            sleep(1)
-            yield self.create_flag()
 
     def create_flag(self):
         chosen_flag = random.choice(list(self.flags.keys()))
