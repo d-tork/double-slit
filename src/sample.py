@@ -56,12 +56,14 @@ class SampleFlagGenerator(object):
         emp_info = self._hr[emp_ueid]
         chosen_flag_reason = random.choice(list(self.flags.keys()))
         flag = Flag(
-            name=emp_info['name'],
-            emp_type=emp_info['emp_type'],
             ueid=emp_ueid,
+            name=emp_info['name'],
             flag=chosen_flag_reason,
             flag_types=self.flags[chosen_flag_reason],
-            severity=random.randint(1, 3)
+            severity=random.randint(1, 3),
+            emp_type=emp_info['emp_type'],
+            position=emp_info['position'],
+            team=emp_info['team']
         )
         return flag
 
