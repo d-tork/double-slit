@@ -8,25 +8,48 @@ import src
 
 
 class HRFile(object):
-    original_names_file = path.join(src.PROJ_PATH, 'src', 'names.csv')
-    new_names_file = path.join(src.PROJ_PATH, 'src', 'hr_names.csv')
-    emp_types = ['gov', 'ctr']
+    default_hr_file_path = path.join(src.PROJ_PATH, 'src', 'hr_names.csv')
+
+    def __init__(self, *args, **kwargs):
+        self.data = None
+        self.data = self.get_hr_data(*args, **kwargs)
+
+    @staticmethod
+    def get_hr_data(*args, **kwargs):
+        while True:
+            try:
+                data = read_local_hr_file(*args, **kwargs)
+                break
+            except FileNotFoundError:
+                hrgen = HRFileGenerator()
+                hrgen.generate(*args, **kwargs)
+        return data
+
+
+class HRFileGenerator(object):
+    names_file = path.join(src.PROJ_PATH, 'src', 'names.csv')
     positions_file = path.join(src.PROJ_PATH, 'src', 'positions.yaml')
+    _emp_types = ['gov', 'ctr']
 
     def __init__(self):
-        self._names = self.read_original_names()
-        self._new_data = self._names.copy()
-        self._positions = self.read_positions_file_as_tuples()
+        self.data = pd.DataFrame()
+
+    def generate(self, *args, **kwargs):
+        original_names = self.read_original_names()
+        self.data = original_names.copy()
         self.create_hr_data()
-        self.write_hr_data_to_file()
+        self.write_hr_data_to_file(*args, **kwargs)
 
     def read_original_names(self):
-        names = pd.read_csv(self.original_names_file, index_col=None)
+        names = pd.read_csv(self.names_file, index_col=None)
         return names
 
-    def read_positions_file_as_tuples(self):
+    def read_positions_file(self):
         positions_dict = read_yaml_into_dict(self.positions_file)
-        return create_ranked_tuples_from_dict(positions_dict)
+        positions = pd.DataFrame.from_dict(positions_dict, orient='index')
+        positions = positions.reset_index().reset_index()
+        positions.columns = ['rank', 'position', 'team']
+        return positions
 
     def create_hr_data(self):
         self.add_ueid()
@@ -34,27 +57,28 @@ class HRFile(object):
         self.add_position()
 
     def add_ueid(self):
-        self._new_data['ueid'] = self._new_data['name'].map(generate_ueid)
+        self.data['ueid'] = self.data['name'].map(generate_ueid)
 
     def add_emp_type(self):
-        self._new_data['emp_type'] = random.choices(
-            population=self.emp_types,
+        self.data['emp_type'] = random.choices(
+            population=self._emp_types,
             weights=[0.3, 0.7],
-            k=len(self._names)
+            k=len(self.data)
         )
 
     def add_position(self):
-        position_df = pd.DataFrame(self._positions, columns=['rank', 'position', 'team'])
-        position_df_resized = position_df.sample(n=len(self._new_data), replace=True)
-        position_df_resized.reset_index(drop=True, inplace=True)
-        self._new_data = pd.concat([self._new_data, position_df_resized], axis=1)
+        positions_df = self.read_positions_file()
+        positions_df_resized = positions_df.sample(n=len(self.data), replace=True)
+        positions_df_resized.reset_index(drop=True, inplace=True)
+        self.data = pd.concat([self.data, positions_df_resized], axis=1)
 
-    def write_hr_data_to_file(self):
-        self._new_data.to_csv(self.new_names_file, index=False)
+    def write_hr_data_to_file(self, hr_file_path=HRFile.default_hr_file_path):
+        self.data.to_csv(hr_file_path, index=False)
 
 
-def create_ranked_tuples_from_dict(d):
-    return tuple((i, kv[0], kv[1]) for i, kv in enumerate(d.items()))
+def read_local_hr_file(hr_file_path=HRFile.default_hr_file_path):
+    print(hr_file_path)
+    return pd.read_csv(hr_file_path, index_col=None)
 
 
 def generate_ueid(s):
@@ -67,3 +91,8 @@ def generate_ueid(s):
 def read_yaml_into_dict(filepath):
     with open(filepath, 'r') as fp:
         return yaml.load(fp, Loader=yaml.FullLoader)
+
+
+if __name__ == '__main__':
+    a = HRFile('test.csv')
+    print(a.data)

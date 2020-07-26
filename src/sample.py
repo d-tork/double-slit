@@ -42,7 +42,7 @@ class SampleFlagGenerator(object):
 
     @staticmethod
     def read_local_hr_file_as_dict():
-        df = pd.read_csv(HRFile.new_names_file, index_col='ueid')
+        df = pd.read_csv(HRFile.default_hr_file_path, index_col='ueid')
         return df.to_dict(orient='index')
 
     def create_flag(self):
