@@ -28,7 +28,7 @@ class SampleFlagGenerator(object):
     def __init__(self, n):
         self.n = n
         self._index = 0
-        self._hr = self.read_local_hr_file_as_dict()
+        self._hr = self.get_hr_lookup_data_as_dict()
         self._flag_types = FlagTypes()
 
     def __iter__(self):
@@ -41,9 +41,9 @@ class SampleFlagGenerator(object):
         raise StopIteration
 
     @staticmethod
-    def read_local_hr_file_as_dict():
-        df = pd.read_csv(HRFile.default_hr_file_path, index_col='ueid')
-        return df.to_dict(orient='index')
+    def get_hr_lookup_data_as_dict():
+        hr = HRFile()
+        return hr.data.to_dict(orient='index')
 
     def create_flag(self):
         emp_ueid = self.get_random_employee_ueid()
