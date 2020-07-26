@@ -1,7 +1,10 @@
 import pandas as pd
 import random
 from datetime import datetime
+from os import path
+import yaml
 
+import src
 from src.helper import HRFile
 
 
@@ -21,18 +24,12 @@ class Flag(dict):
 
 class SampleFlagGenerator(object):
     """adapted from https://www.programiz.com/python-programming/iterator"""
-    flags = {
-        'bankruptcy': ['financial'],
-        'unreported_bankruptcy': ['financial', 'integrity'],
-        'judgment': ['financial'],
-        'cookie_jar': ['integrity'],
-        'spillage': ['espionage']
-    }
 
     def __init__(self, n):
         self.n = n
         self._index = 0
         self._hr = self.read_local_hr_file_as_dict()
+        self._flag_types = FlagTypes()
 
     def __iter__(self):
         return self
@@ -51,12 +48,12 @@ class SampleFlagGenerator(object):
     def create_flag(self):
         emp_ueid = self.get_random_employee_ueid()
         emp_info = self._hr[emp_ueid]
-        chosen_flag_reason = random.choice(list(self.flags.keys()))
+        chosen_flag_type = self.get_random_flag_type()
         flag = Flag(
             ueid=emp_ueid,
             name=emp_info['name'],
-            flag=chosen_flag_reason,
-            flag_types=self.flags[chosen_flag_reason],
+            flag=chosen_flag_type,
+            flag_types=self._flag_types[chosen_flag_type],
             severity=random.randint(1, 3),
             emp_type=emp_info['emp_type'],
             position=emp_info['position'],
@@ -66,5 +63,21 @@ class SampleFlagGenerator(object):
 
     def get_random_employee_ueid(self):
         return random.choice(list(self._hr.keys()))
+
+    def get_random_flag_type(self):
+        return random.choice(list(self._flag_types.keys()))
+
+
+class FlagTypes(dict):
+    flags_file = path.join(src.PROJ_PATH, 'src', 'flags.yaml')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.update(self.read_flags_file_as_dict())
+
+    def read_flags_file_as_dict(self):
+        with open(self.flags_file) as f:
+            flags = yaml.load(f, Loader=yaml.FullLoader)
+        return flags
 
 

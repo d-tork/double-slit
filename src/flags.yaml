@@ -1,0 +1,7 @@
+# Flags and the flag types they belong to
+bankruptcy: [financial]
+unreported_bankruptcy: [financial, integrity]
+judgment: [financial]
+cookie_jar: [integrity]
+spillage: [espionage]
+
