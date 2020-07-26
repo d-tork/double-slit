@@ -76,8 +76,7 @@ class FlagTypes(dict):
         self.update(self.read_flags_file_as_dict())
 
     def read_flags_file_as_dict(self):
-        with open(self.flags_file) as f:
-            flags = yaml.load(f, Loader=yaml.FullLoader)
+        flags = src.helper.read_yaml_into_dict(self.flags_file)
         return flags
 
 

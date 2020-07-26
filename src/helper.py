@@ -25,8 +25,7 @@ class HRFile(object):
         return names
 
     def read_positions_file_as_tuples(self):
-        with open(self.positions_file) as f:
-            positions_dict = yaml.load(f, Loader=yaml.FullLoader)
+        positions_dict = read_yaml_into_dict(self.positions_file)
         return self.create_ranked_tuples_from_dict(positions_dict)
 
     @staticmethod
@@ -64,3 +63,7 @@ class HRFile(object):
     def write_hr_data_to_file(self):
         self._new_data.to_csv(self.new_names_file, index=False)
 
+
+def read_yaml_into_dict(filepath):
+    with open(filepath, 'r') as fp:
+        return yaml.load(fp, Loader=yaml.FullLoader)

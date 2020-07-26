@@ -20,7 +20,6 @@ class FlagsTypesTestCase(unittest.TestCase):
         self.assertIsInstance(self.flag_types, dict)
 
     def test_flagtypes_not_empty(self):
-        # TODO: choose correct assert with IDE help
         self.assertTrue(len(self.flag_types) > 0)
 
 
