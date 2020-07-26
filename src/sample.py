@@ -5,7 +5,7 @@ from os import path
 import yaml
 
 import src
-from src.helper import HRFile
+from src.hrsource import HRFile
 
 
 class Flag(dict):
@@ -76,7 +76,7 @@ class FlagTypes(dict):
         self.update(self.read_flags_file_as_dict())
 
     def read_flags_file_as_dict(self):
-        flags = src.helper.read_yaml_into_dict(self.flags_file)
+        flags = src.hrsource.read_yaml_into_dict(self.flags_file)
         return flags
 
 

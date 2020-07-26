@@ -2,12 +2,12 @@ import unittest
 import pandas as pd
 import os
 
-from src import helper
+from src import hrsource
 
 
 class HRFileGeneratorClassTestCase(unittest.TestCase):
     def setUp(self):
-        self.hr = helper.HRFileGenerator()
+        self.hr = hrsource.HRFileGenerator()
 
     def test_original_names_read(self):
         original_names = self.hr.read_original_names()
@@ -22,7 +22,7 @@ class HRFileGeneratorClassTestCase(unittest.TestCase):
 
 class HRFileCreationTestCase(unittest.TestCase):
     def setUp(self):
-        self.hr = helper.HRFileGenerator()
+        self.hr = hrsource.HRFileGenerator()
         self.hr_file_test_path = 'test_hr_file.csv'
 
     def test_add_ueid_col(self):
@@ -40,7 +40,7 @@ class HRFileCreationTestCase(unittest.TestCase):
 
     def test_hr_file_created(self):
         self.hr.generate(hr_file_path=self.hr_file_test_path)
-        self.assertTrue(os.path.exists(helper.HRFile.default_hr_file_path))
+        self.assertTrue(os.path.exists(hrsource.HRFile.default_hr_file_path))
 
     def test_hr_file_has_data(self):
         self.hr.generate(hr_file_path=self.hr_file_test_path)
@@ -66,18 +66,18 @@ class HRFileTestCase(unittest.TestCase):
         df.to_csv(self.sample_existing_path, index=False)
 
     def test_read_local_hr_file_when_exists(self):
-        sample = helper.read_local_hr_file(self.sample_existing_path)
+        sample = hrsource.read_local_hr_file(self.sample_existing_path)
         self.assertIsInstance(sample, pd.DataFrame)
         self.assertTrue(len(sample) > 0)
 
     def test_read_local_raises_no_file_found(self):
         self.assertRaises(
             FileNotFoundError,
-            helper.read_local_hr_file,
+            hrsource.read_local_hr_file,
             hr_file_path=self.sample_not_existing_path)
 
     def test_creates_file_when_not_exist(self):
-        hr = helper.HRFile(hr_file_path=self.sample_not_existing_path)
+        hr = hrsource.HRFile(hr_file_path=self.sample_not_existing_path)
         self.assertTrue(os.path.exists(self.sample_not_existing_path))
 
     def tearDown(self):
@@ -89,7 +89,7 @@ class HRFileTestCase(unittest.TestCase):
 class HelperFunctionsTestCase(unittest.TestCase):
     def test_generate_ueid(self):
         s = 'John Smith'
-        string_hash = helper.generate_ueid(s)
+        string_hash = hrsource.generate_ueid(s)
         self.assertEqual(string_hash, '6117323d2')
 
 

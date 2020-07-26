@@ -1,0 +1,3 @@
+# Elasticsearch cluster info
+host: synapse
+port: 9200
