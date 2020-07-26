@@ -15,11 +15,6 @@ class HRFileCreationTestCase(unittest.TestCase):
         hr = helper.HRFile()
         self.assertTrue(os.path.exists(hr.new_names_file))
 
-    def test_generate_ueid(self):
-        s = 'John Smith'
-        hash = helper.HRFile.generate_ueid(s)
-        self.assertEqual(hash, '6117323d2')
-
     def test_add_ueid_col(self):
         hr = helper.HRFile()
         self.assertIn('ueid', hr._new_data)
@@ -34,17 +29,24 @@ class HRFileCreationTestCase(unittest.TestCase):
         self.assertIn('team', hr._new_data)
 
 
+class HelperFunctionsTestCase(unittest.TestCase):
+    def test_generate_ueid(self):
+        s = 'John Smith'
+        string_hash = helper.generate_ueid(s)
+        self.assertEqual(string_hash, '6117323d2')
+
+
 class PositionsYAMLTestCase(unittest.TestCase):
     def setUp(self):
         self.d = {'Quarterback': 'Offense', 'Left Tackle': 'Defense'}
 
     def test_positions_from_yaml_are_tuple(self):
-        t = helper.HRFile.create_ranked_tuples_from_dict(self.d)
+        t = helper.create_ranked_tuples_from_dict(self.d)
         self.assertIsInstance(t, tuple)
         self.assertIsInstance(t[0], tuple)
 
     def test_positions_are_ranked(self):
-        t = helper.HRFile.create_ranked_tuples_from_dict(self.d)
+        t = helper.create_ranked_tuples_from_dict(self.d)
         qb_is_rank_0 = t[0]
         self.assertEqual(qb_is_rank_0, (0, 'Quarterback', 'Offense'))
 
