@@ -1,6 +1,6 @@
 # The Double-Slit Experiment
 
-Pinging electrons at a wall with a slit in it and seeing what comes out the other side.
+![The real double slit experiment](https://i.makeagif.com/media/2-22-2015/we2RBC.gif)
 
 ## Installation
 ```
