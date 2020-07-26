@@ -91,8 +91,3 @@ def generate_ueid(s):
 def read_yaml_into_dict(filepath):
     with open(filepath, 'r') as fp:
         return yaml.load(fp, Loader=yaml.FullLoader)
-
-
-if __name__ == '__main__':
-    a = HRFile('test.csv')
-    print(a.data)
