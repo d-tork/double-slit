@@ -1,8 +1,6 @@
-import pandas as pd
 import random
 from datetime import datetime
 from os import path
-import yaml
 
 import src
 from src.hrsource import HRFile
