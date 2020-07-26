@@ -13,7 +13,7 @@ def main():
     es = Elasticsearch(hosts=[es_config])
 
     random.seed()
-    iterations = random.randint(10, 500)
+    iterations = random.randint(1, 50)
     for sample_flag in SampleFlagGenerator(iterations):
         sample_flag.push_to_es(es)
 
