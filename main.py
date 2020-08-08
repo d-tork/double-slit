@@ -1,5 +1,6 @@
 #!/Users/dtork/PycharmProjects/double-slit/venv/bin/python3
 from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import ConnectionError
 import random
 from os import path
 
@@ -15,8 +16,11 @@ def main():
 
     random.seed()
     iterations = random.randint(1, 50)
-    for sample_flag in SampleFlagGenerator(iterations):
-        sample_flag.push_to_es(es)
+    try:
+        for sample_flag in SampleFlagGenerator(iterations):
+            sample_flag.push_to_es(es)
+    except ConnectionError:
+        raise RuntimeError('Connection to Elasticsearch cluster failed')
 
 
 if __name__ == '__main__':

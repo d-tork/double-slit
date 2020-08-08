@@ -77,7 +77,6 @@ class HRFileGenerator(object):
 
 
 def read_local_hr_file(hr_file_path=HRFile.default_hr_file_path):
-    print(hr_file_path)
     return pd.read_csv(hr_file_path, index_col=None)
 
 
