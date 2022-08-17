@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "double-slit"
+version = "0.0.1"
+dependencies = [
+	"elasticsearch ~= 6.8.1",
+	"numpy >= 1.22.0",
+	"pandas >= 1.0.5",
+	"PyYAML"
+]
